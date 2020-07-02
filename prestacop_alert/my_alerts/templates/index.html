@@ -1,0 +1,18 @@
+{% load static %}
+
+<head> 
+    <meta http-equiv="refresh" content="5" >
+    <title>Prestacop Alerting</title>
+</head>
+
+<body>
+
+<center>
+    {% for alert in alerts %}
+       <p> {{ alert|safe }} </p>
+    {% endfor %}
+</center>
+
+
+</body>
+
