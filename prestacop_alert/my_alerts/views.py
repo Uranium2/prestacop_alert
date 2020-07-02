@@ -1,14 +1,15 @@
 from django.shortcuts import render
 import boto3
 import time
+import base64
 from threading import Thread
+import json
 
 alerts = []
 
-aws_access_key_id="ASIAWQZQX3A3RYFRHIVL"
-aws_secret_access_key="F8ny/9Zq8QPdGXQ0DNOdjzgtFrP7bB+9IvvmuMup"
-aws_session_token="FwoGZXIvYXdzENP//////////wEaDN2WbyqZl15wb9gmwiK/AV7W5p9+9JlOOy95APMrISAnE9+FGGowWUeXV/C70M+Ydtsi8AO0CavkYix6coYQZ31FvR0FNjH7DNFR7wBavTs9jR0tjPLBExX3hX/Rft3sUOeW+yYJoxKuMsilXCKfbvvVZG7RV2BuhBpvKq0labrXRzapvu98XuoO/sZzmznMV7dFIM4bg4Hs0jVIYtPTEuNeacHFqPf/HZDTr/B2iSszqrMlbOLwBBbfqGsWdVYkWctQyrxOoYT5H1lzlNdFKJzX9vcFMi2cM5jyZg2VjMuoV5NwxS3O7mmcWs2rdkLW1YG2vvsN5cmROlyN1FaFDzHPXOE="
-
+aws_access_key_id="ASIAWQZQX3A3YK7CQ2MH"
+aws_secret_access_key="qYUyW0oirufbNXWd3+ewjQYEZyk8hhvf+u2oN8Pl"
+aws_session_token="FwoGZXIvYXdzENT//////////wEaDLSybSPaSPWrNXhmECK/AblfKGVhT4a8CoCm4IeNJBLlYbkXNwNxXxpwUbN+tEhH+7kFXyfllPflHiU2EeJRFn84cZqrGYw91So1ykkTckfZaNjdpO1Z/Sde4MoXA+esaEM4E7w1amVCrG1UPEHXpZcRXaMpCJ4/tUW7A04H5CIgkTpskSMFS08+zHmw+JcrtMggI9+l0TZnIsKj3irs27F3nuadnFRL10rCFLEUHsZW00mjr02AHeypHEy/nlcLq73xbUb8zBvdtWA7g9yEKOb69vcFMi1TNUL5DGaqbLilKviRdOohaBiibFQLLqyE1NgGg50kuDf2LoIQyjbc2Qf5fJY="
 my_stream_name = 'message-prestacop'
 
 kinesis_client = boto3.client('kinesis',
@@ -39,10 +40,26 @@ def get_response(record_response, kinesis_client, alerts):
             print("Empty Records")
 
         else:
-            alerts.append(records)
+            for record in records:
+                res = json.loads(record['Data'])
+                res = res[1:-2]
+                res = res.split(', ')
+                data = []
+                for r in res:
+                    data.append(r.split("=", 1))
+
+                flat_list = []
+                for sublist in data:
+                    for item in sublist:
+                        flat_list.append(item)
+
+                dictionary = dict(zip(flat_list[0:][::2], flat_list[1:][::2]))
+                alerts.append(dictionary)
+                print(type(dictionary))
 
         # wait for 5 seconds
         time.sleep(5)
+    kinesis_client.close()
 
 t1 = Thread(target = get_response, args=[record_response, kinesis_client, alerts])
 t1.setDaemon(True)

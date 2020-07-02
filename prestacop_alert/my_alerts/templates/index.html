@@ -6,13 +6,30 @@
 </head>
 
 <body>
-
-<center>
-    {% for alert in alerts %}
-       <p> {{ alert|safe }} </p>
-    {% endfor %}
-</center>
-
-
+    <center>
+    <table>
+        <tr>
+            <th>timestamp</th>
+            <th>long</th>
+            <th>lat</th>
+            <th>message</th>
+            <th>droneId</th>
+            <th>image</th>
+        </tr>
+        {% for obj in alerts %} 
+          <tr>
+            <td>{{ obj.timestamp }}</td>
+            <td>{{ obj.long }}</td>
+            <td>{{ obj.lat }}</td>
+            <td>{{ obj.message }}</td>
+            <td>{{ obj.droneId }}</td>
+            <td>
+                <img src="data:image/png;base64, {{ obj.image }}" />
+            </td>
+            <button type="button" name={{ obj.droneId }}>Take Controle</button>
+          </tr>
+        {% endfor %}
+      </table>
+    </center>
 </body>
 
