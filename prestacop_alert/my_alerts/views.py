@@ -7,9 +7,9 @@ import json
 
 alerts = []
 
-aws_access_key_id="ASIAWQZQX3A3YK7CQ2MH"
-aws_secret_access_key="qYUyW0oirufbNXWd3+ewjQYEZyk8hhvf+u2oN8Pl"
-aws_session_token="FwoGZXIvYXdzENT//////////wEaDLSybSPaSPWrNXhmECK/AblfKGVhT4a8CoCm4IeNJBLlYbkXNwNxXxpwUbN+tEhH+7kFXyfllPflHiU2EeJRFn84cZqrGYw91So1ykkTckfZaNjdpO1Z/Sde4MoXA+esaEM4E7w1amVCrG1UPEHXpZcRXaMpCJ4/tUW7A04H5CIgkTpskSMFS08+zHmw+JcrtMggI9+l0TZnIsKj3irs27F3nuadnFRL10rCFLEUHsZW00mjr02AHeypHEy/nlcLq73xbUb8zBvdtWA7g9yEKOb69vcFMi1TNUL5DGaqbLilKviRdOohaBiibFQLLqyE1NgGg50kuDf2LoIQyjbc2Qf5fJY="
+aws_access_key_id="ASIAWQZQX3A3YRJHRU6L"
+aws_secret_access_key="+7tDoDFFrOU3YWThFlDBD5hGhJV88C39TbhDctlP"
+aws_session_token="FwoGZXIvYXdzEOr//////////wEaDBWm2MXfJFzh5m+XpyK/AW2xDiTcdSxPUMeqW4dYeuK1h7My3+T/R4w5fpgCRiros0AHA2K5VbQ3wJ7G7/rHSih7XbwH//Z7H9a2OGGz7k3M9Ka42w/aFOoKaplbd17VwhJB0Xs9XJkqrCQTQPIJKYw7poTO4LffJLrIvhAb7/P6inJXfzqe0WHQDoQNT5WjA9BiphChIzTVoRG7ELqHEMWBcESj73l/8KF/zzh8s3HbmevosXHR7b9R4w0mgh9M4MVhjV59VRcgbcGYa2prKIrh+/cFMi3ZAV5UZOLz6/UzHjkojUHeHmvpKL5d9gNXwxfsQiaJxGoWV8e5/vbJyoXo7lk="
 my_stream_name = 'message-prestacop'
 
 kinesis_client = boto3.client('kinesis',
@@ -42,20 +42,20 @@ def get_response(record_response, kinesis_client, alerts):
         else:
             for record in records:
                 res = json.loads(record['Data'])
-                res = res[1:-2]
-                res = res.split(', ')
-                data = []
-                for r in res:
-                    data.append(r.split("=", 1))
+                # res = res[1:-2]
+                # res = res.split(', ')
+                # data = []
+                # for r in res:
+                #     data.append(r.split("=", 1))
 
-                flat_list = []
-                for sublist in data:
-                    for item in sublist:
-                        flat_list.append(item)
+                # flat_list = []
+                # for sublist in data:
+                #     for item in sublist:
+                #         flat_list.append(item)
 
-                dictionary = dict(zip(flat_list[0:][::2], flat_list[1:][::2]))
-                alerts.append(dictionary)
-                print(type(dictionary))
+                # dictionary = dict(zip(flat_list[0:][::2], flat_list[1:][::2]))
+                alerts.append(res)
+                print(type(res))
 
         # wait for 5 seconds
         time.sleep(5)
@@ -66,6 +66,13 @@ t1.setDaemon(True)
 t1.start()
 
 def index(request):
-
-
+    if request.method == 'POST':
+        l = list(request.POST.dict().keys())
+        info = l[-1].split("_")
+        print(info)
+        for d in alerts:
+            print(d)
+            if d.get('droneId') == info[0] and d.get('timestamp') == int(info[1]):
+                print("deleting")
+                alerts.remove(d)
     return render(request, 'index.html', {'alerts': alerts})

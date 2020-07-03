@@ -26,7 +26,11 @@
             <td>
                 <img src="data:image/png;base64, {{ obj.image }}" />
             </td>
-            <button type="button" name={{ obj.droneId }}>Take Controle</button>
+            <td><button type="button" name={{ obj.droneId }}>Take Controle</button></td>
+            <form method='POST'> {% csrf_token %}
+              <td><button type="submit" name="{{ obj.droneId }}_{{ obj.timestamp }}">Delete alert</button></td>
+              </form>
+
           </tr>
         {% endfor %}
       </table>
