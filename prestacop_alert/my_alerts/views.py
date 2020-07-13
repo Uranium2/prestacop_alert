@@ -7,10 +7,10 @@ import json
 
 alerts = []
 
-aws_access_key_id="ASIAWQZQX3A3YRJHRU6L"
-aws_secret_access_key="+7tDoDFFrOU3YWThFlDBD5hGhJV88C39TbhDctlP"
-aws_session_token="FwoGZXIvYXdzEOr//////////wEaDBWm2MXfJFzh5m+XpyK/AW2xDiTcdSxPUMeqW4dYeuK1h7My3+T/R4w5fpgCRiros0AHA2K5VbQ3wJ7G7/rHSih7XbwH//Z7H9a2OGGz7k3M9Ka42w/aFOoKaplbd17VwhJB0Xs9XJkqrCQTQPIJKYw7poTO4LffJLrIvhAb7/P6inJXfzqe0WHQDoQNT5WjA9BiphChIzTVoRG7ELqHEMWBcESj73l/8KF/zzh8s3HbmevosXHR7b9R4w0mgh9M4MVhjV59VRcgbcGYa2prKIrh+/cFMi3ZAV5UZOLz6/UzHjkojUHeHmvpKL5d9gNXwxfsQiaJxGoWV8e5/vbJyoXo7lk="
-my_stream_name = 'message-prestacop'
+aws_access_key_id="ASIAWQZQX3A3ZN7PU4UE"
+aws_secret_access_key="dtVUDiFmE78t76aKCGAkXFs8/M+DYKkfAKOA5ahX"
+aws_session_token="FwoGZXIvYXdzEO///////////wEaDBqahmbh9zVe7+8pESK/ASd4+hwQ/50uQQqCVlP4HK59aJ0Vu9wkfFNq31TB1LJMii4XIXiHVhxlOPiTILm+y7Ir1EOY7exkv65ZGx9db7r6jUjS8hjpIss9GAkLuOnK1V/+3yr99rcyj7/q/OwXEfodI/h/k1vFhbJ7MFtles3s30Q9N/yteRQjaZa1HpFdQTN8X7jqvLwsLbOUCsllGfblU0nJ9bRJF0A94yyL7g1exRptF7lKClrH2ap3yAhphqxz1Ol+agigrz+Iu2JvKOvp/PcFMi39j/d1AcDiknPlDqdiyEhwFjRyxGaEjpT8tufqJLVf3vCeraP2C65HWoR2vnw="
+my_stream_name = 'Prestacop-Kinesis-alert'
 
 kinesis_client = boto3.client('kinesis',
     aws_access_key_id=aws_access_key_id,
@@ -42,18 +42,6 @@ def get_response(record_response, kinesis_client, alerts):
         else:
             for record in records:
                 res = json.loads(record['Data'])
-                # res = res[1:-2]
-                # res = res.split(', ')
-                # data = []
-                # for r in res:
-                #     data.append(r.split("=", 1))
-
-                # flat_list = []
-                # for sublist in data:
-                #     for item in sublist:
-                #         flat_list.append(item)
-
-                # dictionary = dict(zip(flat_list[0:][::2], flat_list[1:][::2]))
                 alerts.append(res)
                 print(type(res))
 
@@ -71,8 +59,7 @@ def index(request):
         info = l[-1].split("_")
         print(info)
         for d in alerts:
-            print(d)
-            if d.get('droneId') == info[0] and d.get('timestamp') == int(info[1]):
+            if d.get('droneId') == info[0] and d.get('timestamp_drone') == int(info[1]):
                 print("deleting")
                 alerts.remove(d)
     return render(request, 'index.html', {'alerts': alerts})

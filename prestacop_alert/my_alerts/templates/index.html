@@ -18,7 +18,7 @@
         </tr>
         {% for obj in alerts %} 
           <tr>
-            <td>{{ obj.timestamp }}</td>
+            <td>{{ obj.timestamp_drone }}</td>
             <td>{{ obj.long }}</td>
             <td>{{ obj.lat }}</td>
             <td>{{ obj.message }}</td>
@@ -28,7 +28,7 @@
             </td>
             <td><button type="button" name={{ obj.droneId }}>Take Controle</button></td>
             <form method='POST'> {% csrf_token %}
-              <td><button type="submit" name="{{ obj.droneId }}_{{ obj.timestamp }}">Delete alert</button></td>
+              <td><button type="submit" name="{{ obj.droneId }}_{{ obj.timestamp_drone }}">Delete alert</button></td>
               </form>
 
           </tr>
